@@ -50,7 +50,7 @@ public static class PanelInstaller
             new SelectionPrompt<string>()
                 .Title("[white]Please select the release channel you want to use (use beta for latest stable release)[/]")
                 .AddChoices(
-                    "beta",
+                    "latest",
                     "canary"
                 )
         );
@@ -63,7 +63,7 @@ public static class PanelInstaller
             {
                 moonlightHasBeenInstalled =
                     await BashHelper.ExecuteCommandForExitCode(
-                        "docker images --format \"{{.Repository}}\" | grep -w \"^moonlightpanel/moonlight$\"") == 0;
+                        "docker images --format \"{{.Repository}}\" | grep -w \"^moonlightv2$\"") == 0;
             }
         );
 
@@ -168,19 +168,11 @@ public static class PanelInstaller
             });
         }
         
-        await DisplayHelper.RunAsStatus("[white]Removing old moonlight images if existing[/]", async () =>
-        {
-            await BashHelper.ExecuteCommand($"docker image rm moonlightpanel/moonlight:{channel}", true);
-        });
         
-        await DisplayHelper.RunAsStatus("[white]Pulling moonlight docker image[/]", async () =>
-        {
-            await BashHelper.ExecuteCommand($"docker pull moonlightpanel/moonlight:{channel}");
-        });
         
         await DisplayHelper.RunAsStatus("[white]Creating moonlight container[/]", async () =>
         {
-            await BashHelper.ExecuteCommand($"docker run -d -p 80:80 -p 443:443 --add-host=host.docker.internal:host-gateway -v moonlight:/app/storage --name moonlight --restart=always moonlightpanel/moonlight:{channel}");
+            await BashHelper.ExecuteCommand($"docker run -d -p 80:80 -p 443:443 --add-host=host.docker.internal:host-gateway -v moonlight:/app/storage --name moonlight --restart=always moonlightv2:{channel}");
         });
     }
 
